@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { io as clientIo } from 'socket.io-client';
 
-const socket = clientIo(import.meta.env.VITE_SERVER_URL || 'http://localhost:3001');
+const socket = clientIo('http://localhost:3001');
 
 export default function App() {
   const [status, setStatus] = useState('Connecting...');
@@ -39,23 +39,50 @@ export default function App() {
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Pierre Feuille Ciseaux</h1>
-      <p>Status: {status}</p>
-      {finalWinner ? <h2>{finalWinner === socket.id ? 'You win!' : finalWinner === 'draw' ? 'Draw!' : 'You lose.'}</h2> : (
+    <div style={{ padding: 20, fontFamily: 'Arial, sans-serif', maxWidth: 600, margin: 'auto' }}>
+      <h1 style={{ textAlign: 'center' }}>Pierre Feuille Ciseaux</h1>
+      <p><strong>Status:</strong> {status}</p>
+
+      {finalWinner ? (
+        <h2 style={{ textAlign: 'center', color: '#007acc' }}>
+          {finalWinner === socket.id ? '🏆 Vous avez gagné !' : finalWinner === 'draw' ? 'Match nul !' : 'Vous avez perdu.'}
+        </h2>
+      ) : (
         <>
-          <p>Round: {round}</p>
-          <div>
-            <button disabled={!!myChoice} onClick={() => play('rock')}>Rock</button>
-            <button disabled={!!myChoice} onClick={() => play('paper')}>Paper</button>
-            <button disabled={!!myChoice} onClick={() => play('scissors')}>Scissors</button>
+          <p><strong>Manche :</strong> {round} / 3</p>
+
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+            <button disabled={!!myChoice} onClick={() => play('rock')}>🪨 Rock</button>
+            <button disabled={!!myChoice} onClick={() => play('paper')}>📄 Paper</button>
+            <button disabled={!!myChoice} onClick={() => play('scissors')}>✂️ Scissors</button>
           </div>
-          {choices && (
+
+          {choices && scores && (
             <div>
-              <p>Choices:</p>
-              <pre>{JSON.stringify(choices, null, 2)}</pre>
-              <p>Scores:</p>
-              <pre>{JSON.stringify(scores, null, 2)}</pre>
+              <h3>Choix des joueurs :</h3>
+              <ul>
+                {Object.entries(choices).map(([player, choice]) => (
+                  <li key={player}><strong>{player.slice(0, 6)}...</strong> : {choice}</li>
+                ))}
+              </ul>
+
+              <h3>Score :</h3>
+              <table border="1" cellPadding="8" style={{ borderCollapse: 'collapse', width: '100%' }}>
+                <thead>
+                  <tr>
+                    <th>Joueur</th>
+                    <th>Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(scores).map(([player, score]) => (
+                    <tr key={player}>
+                      <td>{player.slice(0, 6)}...</td>
+                      <td>{score}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </>
