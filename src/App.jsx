@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { io as clientIo } from 'socket.io-client';
 
-const socket = clientIo('http://localhost:3001');
+const socket = clientIo('https://rockpapercissors.onrender.com');
 
 export default function App() {
   const [status, setStatus] = useState('Connecting...');
